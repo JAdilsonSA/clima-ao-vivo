@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clima ao Vivo</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-blue-500 to-indigo-700 min-h-screen flex items-center justify-center">
+
+  <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl w-full max-w-md">
+
+    <h1 class="text-2xl font-bold text-center mb-4">🌦️ Clima ao Vivo</h1>
+
+    <!-- Input cidade -->
+    <div class="flex gap-2 mb-4">
+      <input id="city" type="text" placeholder="Digite a cidade"
+        class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      <button onclick="getWeather()"
+        class="bg-blue-600 text-white px-4 rounded-lg hover:bg-blue-700">
+        Buscar
+      </button>
+    </div>
+
+    <!-- Resultado -->
+    <div id="result" class="text-center space-y-2">
+      <p class="text-gray-500">Digite uma cidade para ver o clima</p>
+    </div>
+
+  </div>
+
+<script>
+async function getWeather() {
+  const city = document.getElementById("city").value;
+  const result = document.getElementById("result");
+
+  if (!city) {
+    result.innerHTML = "<p class='text-red-500'>Digite uma cidade!</p>";
+    return;
+  }
+
+  try {
+    // 1. Geocoding (pegar latitude e longitude)
+    const geoRes = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`
+    );
+    const geoData = await geoRes.json();
+
+    if (!geoData.results) {
+      result.innerHTML = "<p class='text-red-500'>Cidade não encontrada</p>";
+      return;
+    }
+
+    const { latitude, longitude, name, country } = geoData.results[0];
+
+    // 2. Buscar clima
+    const weatherRes = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+    );
+    const weatherData = await weatherRes.json();
+
+    const w = weatherData.current_weather;
+
+    // 3. Exibir dados
+    result.innerHTML = `
+      <div class="space-y-2">
+        <h2 class="text-xl font-semibold">${name}, ${country}</h2>
+        <p class="text-3xl font-bold">${w.temperature}°C</p>
+        <p>💨 Vento: ${w.windspeed} km/h</p>
+        <p class="text-sm text-gray-500">Código clima: ${w.weathercode}</p>
+      </div>
+    `;
+
+  } catch (error) {
+    result.innerHTML = "<p class='text-red-500'>Erro ao buscar dados</p>";
+  }
+}
+</script>
+
+</body>
+</html>
