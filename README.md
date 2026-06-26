@@ -1,6 +1,6 @@
 # 🌦️ Clima ao Vivo
 
-Projeto desenvolvido em HTML, JavaScript e Tailwind CSS para consultar informações meteorológicas em tempo real utilizando a API Open-Meteo.
+Projeto desenvolvido para consultar informações meteorológicas em tempo real utilizando a API Open-Meteo.
 
 ## 📌 Funcionalidades
 
